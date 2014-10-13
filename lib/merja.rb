@@ -1,4 +1,6 @@
 module Merja
+  require 'merja/pathname'
+
   class ForbiddenError < StandardError ; end
   class NotFoundError < StandardError ; end
 
@@ -8,12 +10,12 @@ module Merja
       target = sanitize!(target)
 
       raise NotFoundError unless target.exist?
-
-      target.children
+      collect_children(target)
     end
 
+  private
     def target_pathname(path)
-      Pathname.new(accessible_dir + path)
+      ::Pathname.new(accessible_dir + path)
     end
 
     def sanitize!(pathname)
@@ -22,9 +24,28 @@ module Merja
       cleanpath
     end
 
+    def collect_children(target)
+      target.children.map do |pathname|
+        pathname.to_merja
+      end.compact
+    end
+
     # TODO: configurable
     def accessible_dir
       Rails.root + "public/"
     end
+  end
+end
+
+class Pathname
+  # TODO: 非対応拡張子でもとりあえず何か返せるように
+  def to_merja
+    return unless extname = self.extname.presence
+
+    klass = "Merja::Pathname::#{extname.classify}".constantize
+    klass.new(self)
+
+  rescue NameError
+    nil
   end
 end

@@ -9,7 +9,7 @@ module Merja
 
       raise NotFoundError unless target.exist?
 
-      target
+      target.children
     end
 
     def target_pathname(path)

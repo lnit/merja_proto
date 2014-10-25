@@ -24,9 +24,11 @@ module Merja
       cleanpath
     end
 
+    # 検索対象ディレクトリ内のファイルの中身をhash化して配列で返す
     def collect_children(target)
       target.children.map do |pathname|
-        pathname.to_merja
+        m = pathname.to_merja
+        m && m.to_hash
       end.compact
     end
 

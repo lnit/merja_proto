@@ -7,7 +7,7 @@ module Merja
   class << self
     def survey(path)
       target = target_pathname(path)
-      target = sanitize!(target)
+      target = sanitize(target)
 
       raise NotFoundError unless target.exist?
       collect_children(target)
@@ -18,7 +18,7 @@ module Merja
       ::Pathname.new(accessible_dir + path)
     end
 
-    def sanitize!(pathname)
+    def sanitize(pathname)
       cleanpath = pathname.cleanpath
       raise ForbiddenError if cleanpath.to_s !~ %r(^#{accessible_dir.cleanpath.to_s})
       cleanpath
